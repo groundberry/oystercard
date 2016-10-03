@@ -6,4 +6,14 @@ describe Oystercard do
     oystercard = Oystercard.new
     expect(oystercard.balance).to eq(0)
   end
+
+  describe '#top_up' do
+    it { is_expected.to respond_to(:top_up).with(1).argument }
+
+    it 'can top up the balance' do
+      oystercard = Oystercard.new
+      top_up_value = 5
+      expect{ oystercard.top_up(top_up_value) }.to change{ oystercard.balance }.by top_up_value
+    end
+  end
 end
