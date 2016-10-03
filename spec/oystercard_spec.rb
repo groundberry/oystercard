@@ -1,7 +1,7 @@
 require 'oystercard'
 
 describe Oystercard do
-  oystercard = Oystercard.new
+  subject(:oystercard) { Oystercard.new }
 
   it 'has a starting balance of 0' do
     expect(oystercard.balance).to eq(0)
@@ -10,15 +10,16 @@ describe Oystercard do
   describe '#top_up' do
     it { is_expected.to respond_to(:top_up).with(1).argument }
 
-    it 'can top up the balance' do
+    it 'tops up balance' do
       top_up_value = 5
-      expect{ oystercard.top_up(top_up_value) }.to change{ oystercard.balance }.by top_up_value
+      expect { oystercard.top_up(top_up_value) }
+        .to change { oystercard.balance }.by top_up_value
     end
 
     it 'enforces maximum balance' do
-      error = 'Maximum balance exceded'
+      error = 'Maximum balance exceeded'
       top_up_value = 125
-      expect{ oystercard.top_up(top_up_value) }.to raise_error error
+      expect { oystercard.top_up(top_up_value) }.to raise_error error
     end
   end
 end
