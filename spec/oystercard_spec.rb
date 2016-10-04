@@ -33,4 +33,29 @@ describe Oystercard do
         .to change { oystercard.balance }.by (- deducted_value)
     end
   end
+
+  describe '#touch_in' do
+    it { is_expected. to respond_to(:touch_in)}
+    it 'changes the status of the card when touching in' do
+      expect(oystercard.touch_in).to be true
+    end
+  end
+
+  describe '#touch_out' do
+    it { is_expected.to respond_to(:touch_out)}
+    it 'changes the status of the card when touching out' do
+      oystercard.touch_in
+      expect(oystercard.touch_out).to be false
+    end
+  end
+
+  describe '#in_journey?' do
+    it { is_expected.to respond_to(:in_journey?)}
+    it 'confirms that the customer is not on a journey' do
+      expect(oystercard).not_to be_in_journey
+    end
+  end
+
+
+
 end
