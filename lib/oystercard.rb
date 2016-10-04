@@ -26,6 +26,7 @@ class Oystercard
   end
 
   def touch_out
+    deduct(1.5)
     @travel = false if @travel == true
   end
 

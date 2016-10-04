@@ -48,11 +48,20 @@ describe Oystercard do
   end
 
   describe '#touch_out' do
+
     it { is_expected.to respond_to(:touch_out) }
+
     it 'changes the status of the card when touching out' do
       oystercard.top_up(10)
       oystercard.touch_in
       expect(oystercard.touch_out).to be false
+    end
+
+    it 'deducts balance when touching out' do
+      oystercard.top_up(10)
+      deducted_value = 1.5
+      expect { oystercard.touch_out }
+        .to change { oystercard.balance }.by(- deducted_value)
     end
   end
 
