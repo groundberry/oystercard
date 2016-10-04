@@ -30,32 +30,36 @@ describe Oystercard do
       oystercard.top_up(50)
       deducted_value = 1.5
       expect { oystercard.deduct(deducted_value) }
-        .to change { oystercard.balance }.by (- deducted_value)
+        .to change { oystercard.balance }.by(- deducted_value)
     end
   end
 
   describe '#touch_in' do
-    it { is_expected. to respond_to(:touch_in)}
+    it { is_expected. to respond_to(:touch_in) }
     it 'changes the status of the card when touching in' do
+      oystercard.top_up(10)
       expect(oystercard.touch_in).to be true
+    end
+
+    it 'checks minimum balance' do
+      error = 'Insuficient balance'
+      expect { oystercard.touch_in }.to raise_error error
     end
   end
 
   describe '#touch_out' do
-    it { is_expected.to respond_to(:touch_out)}
+    it { is_expected.to respond_to(:touch_out) }
     it 'changes the status of the card when touching out' do
+      oystercard.top_up(10)
       oystercard.touch_in
       expect(oystercard.touch_out).to be false
     end
   end
 
   describe '#in_journey?' do
-    it { is_expected.to respond_to(:in_journey?)}
+    it { is_expected.to respond_to(:in_journey?) }
     it 'confirms that the customer is not on a journey' do
       expect(oystercard).not_to be_in_journey
     end
   end
-
-
-
 end
