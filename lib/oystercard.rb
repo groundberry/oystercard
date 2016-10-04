@@ -11,4 +11,8 @@ class Oystercard
     fail 'Maximum balance exceeded' if balance + top_up_value > max_balance
     @balance += top_up_value
   end
+
+  def deduct(deducted_value)
+    @balance -= deducted_value
+  end
 end

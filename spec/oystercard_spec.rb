@@ -22,4 +22,15 @@ describe Oystercard do
       expect { oystercard.top_up(top_up_value) }.to raise_error error
     end
   end
+
+  describe '#deduct' do
+    it { is_expected.to respond_to(:deduct).with(1).argument }
+
+    it 'deducts balance' do
+      oystercard.top_up(50)
+      deducted_value = 1.5
+      expect { oystercard.deduct(deducted_value) }
+        .to change { oystercard.balance }.by (- deducted_value)
+    end
+  end
 end
