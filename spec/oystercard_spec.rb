@@ -61,8 +61,8 @@ describe Oystercard do
 
   describe '#touch_out' do
     it { is_expected.to respond_to(:touch_out).with(1).argument }
-    # let(:entry_station) {double :station}
-    # let(:exit_station) {double :station}
+    let(:entry_station) { double :station }
+    let(:exit_station) { double :station }
 
     it 'changes the status of the card when touching out' do
       oystercard.top_up(10)
