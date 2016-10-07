@@ -8,8 +8,8 @@ class Oystercard
   MIN_CHARGE = 1
   PENALTY_FARE = 6
 
-  def initialize(max_balance = MAX_BALANCE, min_balance = MIN_BALANCE)
-    @balance = 0
+  def initialize(balance = 0)
+    @balance = balance
     @max_balance = max_balance
     @min_balance = min_balance
     @journey_history = []
@@ -22,10 +22,7 @@ class Oystercard
 
   def touch_in(station)
     raise 'Insuficient balance' if balance < MIN_BALANCE
-    if @journey && @journey.exit_station.nil?
-      @journey_history << @journey
-      deduct(@journey.fare)
-    end
+    complete_journey if @journey && @journey.exit_station.nil?
     @journey = Journey.new
     @journey.start(station)
   end
@@ -34,8 +31,7 @@ class Oystercard
     @journey = Journey.new if @journey.nil?
     unless @journey_history.include?(@journey)
       @journey.finish(station)
-      @journey_history << @journey
-      deduct(@journey.fare)
+      complete_journey
     end
   end
 
@@ -43,5 +39,10 @@ class Oystercard
 
   def deduct(deducted_value)
     @balance -= deducted_value
+  end
+
+  def complete_journey(station = nil)
+    @journey_history << @journey
+    deduct(@journey.fare)
   end
 end

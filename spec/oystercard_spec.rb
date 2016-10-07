@@ -1,11 +1,17 @@
 require 'oystercard'
 
 describe Oystercard do
-  subject(:oystercard) { Oystercard.new }
+  subject(:oystercard) { Oystercard.new(10) }
+  subject(:oystercard2) {Oystercard.new}
   let(:station) { double :station }
 
+  def make_journey
+    oystercard.touch_in(station)
+    oystercard.touch_out(station)
+  end
+
   it 'has a starting balance of 0' do
-    expect(oystercard.balance).to eq(0)
+    expect(oystercard2.balance).to eq(0)
   end
 
   describe '#top_up' do
@@ -29,7 +35,7 @@ describe Oystercard do
 
     it 'checks minimum balance' do
       error = 'Insuficient balance'
-      expect { oystercard.touch_in(station) }.to raise_error error
+      expect { oystercard2.touch_in(station) }.to raise_error error
     end
   end
 
@@ -37,23 +43,18 @@ describe Oystercard do
     it { is_expected.to respond_to(:touch_out).with(1).argument }
 
     it 'deducts balance when touching out' do
-      oystercard.top_up(10)
       oystercard.touch_in(station)
       expect { oystercard.touch_out(station) }
         .to change { oystercard.balance }.by(- Oystercard::MIN_CHARGE)
     end
 
     it 'saves the journey in journey history' do
-      oystercard.top_up(10)
-      oystercard.touch_in(station)
-      oystercard.touch_out(station)
+      make_journey
       expect(oystercard.journey_history).to_not be_empty
     end
 
     it 'doesn\'t charge twice' do
-      oystercard.top_up(10)
-      oystercard.touch_in(station)
-      oystercard.touch_out(station)
+      make_journey
       expect { oystercard.touch_out(station) }
         .to change { oystercard.balance }.by 0
     end
@@ -61,24 +62,35 @@ describe Oystercard do
 
   context 'incomplete journeys' do
     it 'charges a penalty fare if not touched in' do
-      oystercard.top_up(10)
       expect { oystercard.touch_out(station) }
         .to change { oystercard.balance }.by(- Oystercard::PENALTY_FARE)
     end
 
     it 'charges a penalty fare if not touched out' do
-      oystercard.top_up(10)
       oystercard.touch_in(station)
       expect { oystercard.touch_in(station) }
         .to change { oystercard.balance }.by(- Oystercard::PENALTY_FARE)
     end
 
     it 'doesn\'t charge a penalty fare when touching in for the first time' do
-      oystercard.top_up(10)
-      oystercard.touch_in(station)
-      oystercard.touch_out(station)
+      make_journey
       expect { oystercard.touch_in(station) }
         .to change { oystercard.balance }.by 0
+    end
+
+    it "deducts penalty if entry station wasn't logged" do
+      expect{
+        oystercard.touch_out(station)
+        make_journey
+      }.to change{oystercard.balance}.by(-(Journey::PENALTY_FARE+Journey::MIN_CHARGE))
+    end
+
+    it "doesn't double charge the user" do
+      expect{
+        3.times do
+          make_journey
+        end
+      }.to change{oystercard.balance}.by(-Journey::MIN_CHARGE*3)
     end
   end
 end
