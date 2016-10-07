@@ -1,34 +1,23 @@
 class Journey
-  attr_reader :entry_station, :exit_station, :journey, :journey_history
+  attr_reader :entry_station, :exit_station
+  MIN_CHARGE = 1
+  PENALTY_FARE = 6
 
-  def initialize(travel = false)
-    @travel = travel
-    @journey = {}
-    @journey_history = []
-  end
-
-  def journey_start(station)
+  def start(station)
     @entry_station = station
-    @journey[:entry_station] = station
-    @travel = true if @travel == false
   end
 
-  def journey_finish(station)
-    @entry_station = nil
+  def finish(station)
     @exit_station = station
-    @journey[:exit_station] = station
-    @travel = false if @travel == true
   end
 
   def fare
-    touch_in || touch_out ? deducted_value = MIN_CHARGE : deducted_value = PENALTY_FARE
+    journey_complete? ? MIN_CHARGE : PENALTY_FARE
   end
+
+  private
 
   def journey_complete?
-    !entry_station
-  end
-
-  def history
-    journey_history << journey
+    @entry_station && @exit_station
   end
 end
